@@ -8,7 +8,6 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from stable_baselines3 import PPO
 from stable_baselines3.common.policies import ActorCriticPolicy
 from .segnet import SegNet
-
 class CustomNetwork(nn.Module):
     """
     Custom network for policy and value function.
@@ -85,7 +84,8 @@ class CustomFeaturesExtractor(BaseFeaturesExtractor):
     def __init__(self, observation_space: Space, features_dim: int = 0) -> None:
         super().__init__(observation_space, features_dim)
         n_inp = observation_space.shape[0]
-        self.segnet = nn.Sequential(
+        self.segnet = SegNet(n_inp, n_inp)
+        self.enc = nn.Sequential(
             nn.Conv2d(in_channels=n_inp, out_channels=64, kernel_size=3, padding=1),
             nn.ReLU(),
             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, padding=1), #64*64*64
@@ -101,4 +101,5 @@ class CustomFeaturesExtractor(BaseFeaturesExtractor):
         )
     
     def forward(self, x):
-        return self.segnet.forward(x)
+        x /= 255.
+        return self.enc(self.segnet(x))
