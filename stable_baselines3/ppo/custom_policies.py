@@ -84,6 +84,7 @@ class CustomFeaturesExtractor(BaseFeaturesExtractor):
     def __init__(self, observation_space: Space, features_dim: int = 0) -> None:
         super().__init__(observation_space, features_dim)
         n_inp = observation_space.shape[0]
+        # n_inp = 3
         self.segnet = SegNet(n_inp, n_inp)
         self.enc = nn.Sequential(
             nn.Conv2d(in_channels=n_inp, out_channels=64, kernel_size=3, padding=1),
